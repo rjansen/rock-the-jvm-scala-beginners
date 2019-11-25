@@ -1,4 +1,4 @@
-package lectures.part1basics
+package lectures.basics
 
 /**
   * Created by Daniel on 07-May-18.
