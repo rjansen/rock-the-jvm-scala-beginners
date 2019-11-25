@@ -2,6 +2,8 @@ MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 BASE_DIR := $(shell cd $(dir $(MAKEFILE)); pwd)
 SRC_DIR  := $(BASE_DIR)/src
 
+BASICS_LECTURES := ValuesVariablesTypes Expressions Functions Recursion CBNvsCBV DefaultArgs StringOps
+LECTURES := $(BASICS_LECTURES)
 
 .PHONY: clean
 clean:
@@ -22,3 +24,12 @@ compile-scala-playground:
 .PHONY: run-scala-playground
 run-scala-playground: compile-scala-playground
 	scala -cp $(SRC_DIR) playground.ScalaPlayground
+
+check-lecture%:
+	$(if $(word $*,$(BASICS_LECTURES)),,$(error invalid lecture!))
+
+compile-basic%: check-lecture%
+	scalac -d $(SRC_DIR) $(SRC_DIR)/lectures/part1basics/$(word $*,$(BASICS_LECTURES)).scala
+
+run-basic%: compile-basic%
+	scala -cp $(SRC_DIR) lectures.part1basics.$(word $*,$(BASICS_LECTURES))
