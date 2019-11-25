@@ -28,8 +28,8 @@ run-scala-playground: compile-scala-playground
 check-lecture%:
 	$(if $(word $*,$(BASICS_LECTURES)),,$(error invalid lecture!))
 
-compile-basic%: check-lecture%
-	scalac -d $(SRC_DIR) $(SRC_DIR)/lectures/part1basics/$(word $*,$(BASICS_LECTURES)).scala
+compile-basics%: check-lecture%
+	scalac -d $(SRC_DIR) $(SRC_DIR)/lectures/basics/$(word $*,$(BASICS_LECTURES)).scala
 
-run-basic%: compile-basic%
-	scala -cp $(SRC_DIR) lectures.part1basics.$(word $*,$(BASICS_LECTURES))
+run-basics%: compile-basics%
+	scala -cp $(SRC_DIR) lectures.basics.$(word $*,$(BASICS_LECTURES))
