@@ -3,7 +3,8 @@ BASE_DIR := $(shell cd $(dir $(MAKEFILE)); pwd)
 SRC_DIR  := $(BASE_DIR)/src
 
 BASICS_LECTURES := ValuesVariablesTypes Expressions Functions Recursion CBNvsCBV DefaultArgs StringOps
-LECTURES := $(BASICS_LECTURES)
+OOP_LECTURES := OOBasics MethodNotations
+LECTURES := $(BASICS_LECTURES) $(OOP_LECTURES)
 
 .PHONY: clean
 clean:
@@ -25,11 +26,20 @@ compile-scala-playground:
 run-scala-playground: compile-scala-playground
 	scala -cp $(SRC_DIR) playground.ScalaPlayground
 
-check-lecture%:
-	$(if $(word $*,$(BASICS_LECTURES)),,$(error invalid lecture!))
+define-%:
+	$(eval SECTION := $(word 1,$(subst -, ,$*)))
+	$(eval SECTION_TITLE := $(shell echo $(SECTION) | tr a-z A-Z))
+	$(eval SECTION_LECTURES := $($(SECTION_TITLE)_LECTURES))
+	$(eval LECTURE_NUM := $(word 2,$(subst -, ,$*)))
+	$(eval LECTURE := $(word $(LECTURE_NUM),$(SECTION_LECTURES)))
+	$(if $(LECTURE),,$(error invalid lecture!))
+	$(eval LECTURE_FILE := lectures/$(SECTION)/$(LECTURE).scala)
+	$(eval LECTURE_CLASS := lectures.$(SECTION).$(LECTURE))
+	@echo option=$(SECTION)/$(LECTURE_NUM)={lecture=$(LECTURE) source=$(LECTURE_FILE) class=$(LECTURE_CLASS)}
 
-compile-basics%: check-lecture%
-	scalac -d $(SRC_DIR) $(SRC_DIR)/lectures/basics/$(word $*,$(BASICS_LECTURES)).scala
+compile-%: define-% 
+	scalac -d $(SRC_DIR) $(SRC_DIR)/$(LECTURE_FILE)
 
-run-basics%: compile-basics%
-	scala -cp $(SRC_DIR) lectures.basics.$(word $*,$(BASICS_LECTURES))
+run-%: compile-%
+	scala -cp $(SRC_DIR) $(LECTURE_CLASS)
+
